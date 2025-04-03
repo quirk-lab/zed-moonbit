@@ -1,11 +1,4 @@
-#
-# zed-moonbit
-#
-
 *.wasm
-
-#
-# Rust
-#
-
-/target
+grammars
+target
+moonbit-test

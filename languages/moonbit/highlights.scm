@@ -1,0 +1,244 @@
+;; Interpolation
+
+(interpolator) @none
+
+;; Packages
+
+(package_identifier) @module
+
+;; Variables
+
+; Variables
+
+(parameter (parameter_label) @variable.parameter)
+(parameter (lowercase_identifier) @variable.parameter)
+((parameter (lowercase_identifier) @variable.parameter.builtin)
+ (#any-of? @variable.parameter.builtin
+           "self"))
+
+(pattern (simple_pattern (lowercase_identifier) @variable))
+
+(qualified_identifier (lowercase_identifier) @variable)
+((qualified_identifier (lowercase_identifier) @variable.builtin)
+ (#any-of? @variable.builtin
+           "self"))
+(qualified_identifier (dot_lowercase_identifier) @variable)
+
+(value_definition (lowercase_identifier) @variable)
+
+(let_mut_expression (lowercase_identifier) @variable)
+
+(for_in_expression (for_keyword) (lowercase_identifier) @variable "in")
+
+(for_binder (lowercase_identifier) @variable)
+
+; Constructors
+
+(enum_constructor) @constructor
+(constructor_expression (uppercase_identifier) @constructor)
+(constructor_expression (dot_uppercase_identifier) @constructor)
+
+; Constants
+
+(const_definition (uppercase_identifier) @constant)
+((constructor_expression (uppercase_identifier) @constant)
+ (#match? @constant "^[A-Z][A-Z_]+$"))
+((constructor_expression (dot_uppercase_identifier) @constant)
+ (#match? @constant "^\.[A-Z][A-Z_]+$"))
+
+;; Types
+
+; Type identifiers
+
+(type_identifier) @type
+(qualified_type_identifier) @type
+
+; Type definitions
+
+(enum_definition (identifier) @type.definition)
+(struct_definition (identifier) @type.definition)
+(type_definition (identifier) @type.definition)
+(trait_definition (identifier) @type.definition)
+(type_alias_targets (identifier) @type.definition)
+(type_alias_targets (dot_identifier) @type.definition)
+(type_alias_target (identifier) @type.definition)
+(error_type_definition (identifier) @type.definition)
+(trait_alias_targets (identifier) @type.definition)
+(trait_alias_targets (dot_identifier) @type.definition)
+(trait_alias_target (identifier) @type.definition)
+
+; Builtin types
+
+((qualified_type_identifier) @type.builtin
+ (#any-of? @type.builtin
+           "Unit"
+           "Bool"
+           "Byte"
+           "Int16"
+           "UInt16"
+           "Int"
+           "UInt"
+           "Int64"
+           "UInt64"
+           "Float"
+           "Double"
+           "FixedArray"
+           "Array"
+           "Bytes"
+           "String"
+           "Error"
+           "Self"))
+
+; Fields
+
+(struct_field_declaration (lowercase_identifier) @variable.member)
+(struct_expression (labeled_expression (lowercase_identifier) @variable.member))
+(struct_expression (labeled_expression_pun (lowercase_identifier) @variable.member))
+(struct_expression (labeled_expression (lowercase_identifier) @variable.member))
+(struct_expression (labeled_expression_pun (lowercase_identifier) @variable.member))
+(struct_field_expression (labeled_expression (lowercase_identifier) @variable.member))
+(struct_field_expression (labeled_expression_pun (lowercase_identifier) @variable.member))
+(struct_field_expression (labeled_expression (lowercase_identifier) @variable.member))
+(struct_field_expression (labeled_expression_pun (lowercase_identifier) @variable.member))
+(struct_pattern (struct_field_pattern (labeled_pattern (lowercase_identifier) @variable.member)))
+(struct_pattern (struct_field_pattern (labeled_pattern_pun (lowercase_identifier) @variable.member)))
+(access_expression (accessor (dot_identifier) @variable.member))
+
+; Attributes
+
+(attribute) @attribute
+((attribute) @attribute.builtin
+ (#eq? @attribute.builtin
+          "#coverage.skip"))
+((attribute) @attribute.builtin
+ (#match? @attribute.builtin
+          "^#deprecated\\(.*\\)"))
+
+;; Functions
+
+; Function calls
+
+(apply_expression (simple_expression (qualified_identifier (lowercase_identifier) @function.call)))
+(apply_expression (simple_expression (qualified_identifier (dot_lowercase_identifier) @function.call)))
+
+; Method calls
+
+(method_expression (lowercase_identifier) @function.method.call)
+(dot_apply_expression (dot_identifier) @function.method.call)
+(dot_dot_apply_expression (dot_dot_identifier) @function.method.call)
+
+; Function definitions
+
+(function_definition (function_identifier (lowercase_identifier) @function))
+(function_alias_targets (lowercase_identifier) @function)
+(function_alias_targets (dot_lowercase_identifier) @function)
+(function_alias_targets (dot_lowercase_identifier) @function)
+(function_alias_target (lowercase_identifier) @function)
+(trait_method_declaration (function_identifier) @function)
+(impl_definition (function_identifier) @function)
+
+; Method definitions
+
+(function_definition (function_identifier (type_name (qualified_type_identifier)) (lowercase_identifier) @function.method))
+
+;; Labels
+
+(loop_label) @label
+("continue" (parameter_label) @label)
+("break" (parameter_label) @label)
+
+;; Operators
+
+[
+	"+" "-" "*" "/" "%"
+  "<<" ">>" "|" "&" "^"
+  "=" (equal) (plus_equal) (minus_equal) (asterisk_equal) (slash_equal) (percent_equal)
+  "<" ">" ">=" "<=" "==" "!="
+  "&&" "||"
+  "=>" "->"
+  "!" "!!" (question_operator)
+] @operator
+
+;; Keywords
+
+[ (mutability) "mut" ] @keyword.modifier
+
+[
+  "struct" "enum" "type" "trait" "typealias" "traitalias"
+] @keyword.type
+
+[
+  "pub" "priv" "readonly" "all" "open" "extern"
+] @keyword.modifier
+
+[
+  "guard" "let" "const"
+  "with" "as" (is_keyword)
+] @keyword
+
+(derive_keyword) @keyword
+
+[ "fn" "test" "impl" "fnalias" ] @keyword.function
+"return" @keyword.return
+[ "while" "loop" (for_keyword) "break" "continue" "in" ] @keyword.repeat
+
+[
+  "if"
+  "else"
+  "match"
+] @keyword.conditional
+
+"async" @keyword.coroutine
+
+[ "try" "raise" "catch" ] @keyword.exception
+
+;; Delimiters
+
+[
+  ";"
+  ","
+] @punctuation.delimiter
+
+(colon) @punctuation.delimiter
+(colon_colon) @punctuation.delimiter
+(dot) @punctuation.delimiter
+(dot_dot) @punctuation.delimiter
+
+(array_sub_pattern (dot_dot)) @operator
+(dot_dot_apply_expression (dot_dot_identifier (dot_dot) @punctuation.delimiter))
+
+[
+ (dot_dot_lt)
+ (dot_dot_eq)
+] @operator
+
+[
+  "(" ")"
+  "{" "}"
+  "[" "]"
+] @punctuation.bracket
+
+;; Literals
+
+(string_interpolation) @string
+(string_literal) @string
+(multiline_string_literal) @string
+(escape_sequence) @string.escape
+
+(interpolator
+ "\\{" @punctuation.special
+ "}" @punctuation.special)
+
+(integer_literal) @number
+(float_literal) @number.float
+(boolean_literal) @boolean
+(char_literal) @character
+
+;; Comments
+
+(comment) @comment @spell
+(docstring) @comment.documentation @spell
+
+;; Errors
+
+(ERROR) @error
