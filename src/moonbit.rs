@@ -1,67 +1,106 @@
-use zed::settings::LspSettings;
+use std::{env, fs};
 use zed_extension_api::{self as zed, Result};
 
-struct MoonBitBinary {
-    pub path: String,
-    pub args: Option<Vec<String>>,
+struct MoonBitExtension {
+    did_find_server: bool,
 }
 
-struct MoonBitExtension;
+const SERVER_PATH: &str = "node_modules/@moonbit/moonbit-lsp/lsp-server.js";
+const PACKAGE_NAME: &str = "@moonbit/moonbit-lsp";
 
 impl MoonBitExtension {
-    fn language_server_binary(
-        &mut self,
-        _language_server_id: &zed::LanguageServerId,
-        worktree: &zed::Worktree,
-    ) -> Result<MoonBitBinary> {
-        let binary_settings = LspSettings::for_worktree("moonbit", worktree)
-            .ok()
-            .and_then(|lsp_settings| lsp_settings.binary);
-        let binary_args = binary_settings
-            .as_ref()
-            .and_then(|binary_settings| binary_settings.arguments.clone());
+    fn server_exists(&self) -> bool {
+        fs::metadata(SERVER_PATH).map_or(false, |stat| stat.is_file())
+    }
 
-        if let Some(path) = binary_settings.and_then(|binary_settings| binary_settings.path) {
-            return Ok(MoonBitBinary {
-                path,
-                args: binary_args,
-            });
+    fn server_script_path(&mut self, id: &zed::LanguageServerId) -> Result<String> {
+        let server_exists = self.server_exists();
+        if self.did_find_server && server_exists {
+            return Ok(SERVER_PATH.to_string());
         }
 
-        if let Some(path) = worktree.which("moonbit") {
-            return Ok(MoonBitBinary {
-                path,
-                args: binary_args,
-            });
+        zed::set_language_server_installation_status(
+            id,
+            &zed::LanguageServerInstallationStatus::CheckingForUpdate,
+        );
+        let version = zed::npm_package_latest_version(PACKAGE_NAME)?;
+
+        if !server_exists
+            || zed::npm_package_installed_version(PACKAGE_NAME)?.as_ref() != Some(&version)
+        {
+            zed::set_language_server_installation_status(
+                id,
+                &zed::LanguageServerInstallationStatus::Downloading,
+            );
+            let result = zed::npm_install_package(PACKAGE_NAME, &version);
+            match result {
+                Ok(()) => {
+                    if !self.server_exists() {
+                        Err(format!(
+                            "installed package '{PACKAGE_NAME}' did not contain expected path '{SERVER_PATH}'",
+                        ))?;
+                    }
+                }
+                Err(error) => {
+                    if !self.server_exists() {
+                        Err(error)?;
+                    }
+                }
+            }
         }
 
-        Err(
-            "moonbit must be installed from https://www.moonbitlang.com/download#moonbit-cli-tools or pointed to by the LSP binary settings"
-                .to_string(),
-        )
+        self.did_find_server = true;
+        Ok(SERVER_PATH.to_string())
     }
 }
 
 impl zed::Extension for MoonBitExtension {
     fn new() -> Self {
-        Self
+        Self {
+            did_find_server: false,
+        }
     }
 
     fn language_server_command(
         &mut self,
-        language_server_id: &zed::LanguageServerId,
-        worktree: &zed::Worktree,
+        id: &zed::LanguageServerId,
+        _: &zed::Worktree,
     ) -> Result<zed::Command> {
-        let dart_binary = self.language_server_binary(language_server_id, worktree)?;
-
+        let server_path = self.server_script_path(id)?;
         Ok(zed::Command {
-            command: dart_binary.path,
-            args: dart_binary.args.unwrap_or_else(|| {
-                vec!["language-server".to_string(), "--protocol=lsp".to_string()]
-            }),
+            command: zed::node_binary_path()?,
+            args: vec![
+                zed_ext::sanitize_windows_path(env::current_dir().unwrap())
+                    .join(&server_path)
+                    .to_string_lossy()
+                    .to_string(),
+                "--stdio".to_string(),
+            ],
             env: Default::default(),
         })
     }
 }
 
 zed::register_extension!(MoonBitExtension);
+
+/// Extensions to the Zed extension API that have not yet stabilized.
+mod zed_ext {
+    /// Sanitizes the given path to remove the leading `/` on Windows.
+    ///
+    /// On macOS and Linux this is a no-op.
+    ///
+    /// This is a workaround for https://github.com/bytecodealliance/wasmtime/issues/10415.
+    pub fn sanitize_windows_path(path: std::path::PathBuf) -> std::path::PathBuf {
+        use zed_extension_api::{current_platform, Os};
+
+        let (os, _arch) = current_platform();
+        match os {
+            Os::Mac | Os::Linux => path,
+            Os::Windows => path
+                .to_string_lossy()
+                .to_string()
+                .trim_start_matches('/')
+                .into(),
+        }
+    }
+}
