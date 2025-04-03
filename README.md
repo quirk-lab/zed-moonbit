@@ -1,6 +1,6 @@
 # Zed MoonBit
 
-A [MoonBit](https://www.moonbitlang.cn/) extension for [Zed](https://zed.dev).
+A [MoonBit](https://www.moonbitlang.com/) extension for [Zed](https://zed.dev).
 
 ## Development
 
