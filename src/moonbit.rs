@@ -1,5 +1,6 @@
 use std::{env, fs};
-use zed_extension_api::{self as zed, Result};
+use zed::settings::LspSettings;
+use zed_extension_api::{self as zed, serde_json, Result};
 
 struct MoonBitExtension {
     did_find_server: bool,
@@ -78,6 +79,21 @@ impl zed::Extension for MoonBitExtension {
             ],
             env: Default::default(),
         })
+    }
+
+    fn language_server_workspace_configuration(
+        &mut self,
+        _language_server_id: &zed::LanguageServerId,
+        worktree: &zed::Worktree,
+    ) -> Result<Option<serde_json::Value>> {
+        let settings = LspSettings::for_worktree("moonbit", worktree)
+            .ok()
+            .and_then(|lsp_settings| lsp_settings.settings.clone())
+            .unwrap_or_default();
+
+        Ok(Some(serde_json::json!({
+            "moonbit": settings
+        })))
     }
 }
 
