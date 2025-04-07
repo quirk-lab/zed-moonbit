@@ -1,0 +1,14 @@
+[
+  {
+    "label": "moon run",
+    "command": "moon",
+    "args": ["run", "$ZED_RELATIVE_FILE"],
+    "tags": ["moon-run"]
+  },
+  {
+    "label": "moon test",
+    "command": "moon",
+    "args": ["test"],
+    "tags": ["moon-test"]
+  }
+]
