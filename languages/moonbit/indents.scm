@@ -5,16 +5,8 @@
   (nonempty_block_expression)
   (struct_expression)
   (structure_item)
-] @indent.begin
+] @indent
 
-[
- ")"
- "}"
- "]"
-] @indent.end
-
-[
- ")"
- "}"
- "]"
-] @indent.branch
+(_ "(" ")" @end) @indent
+(_ "[" "]" @end) @indent
+(_ "{" "}" @end) @indent
