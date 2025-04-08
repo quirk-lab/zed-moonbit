@@ -1,6 +1,6 @@
 [
   {
-    "label": "moon run",
+    "label": "moon run $ZED_FILENAME",
     "command": "moon",
     "args": ["run", "$ZED_RELATIVE_FILE"],
     "tags": ["moon-run"]
