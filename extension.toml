@@ -16,4 +16,4 @@ languages = ["MoonBit"]
 
 [grammars.moonbit]
 repository = "https://github.com/moonbitlang/tree-sitter-moonbit"
-commit = "290094725390a4e5f4fdb0524d1be037016890ba"
+commit = "0a9622038b00e2122a0e5414f4fd927dd7b3bd5f"
