@@ -10,8 +10,8 @@
     "async"? @context
     "fn" @context
     (function_identifier) @name
-      (parameters)? @context.extra
-      (return_type)? @context.extra)) @item
+    (parameters)? @context.extra
+    (return_type)? @context.extra) @item)
 
 ; Function alias
 (function_alias_definition
@@ -19,6 +19,13 @@
   (visibility)? @context
   "fnalias" @context
   (function_alias_targets) @name) @item
+
+; Named lambda function
+(named_lambda_expression
+  "fn" @context
+  (lowercase_identifier) @name
+  (parameters)? @context.extra
+  (return_type)? @context.extra) @item
 
 ; Structs
 (struct_definition
@@ -28,6 +35,14 @@
   (identifier) @name
   (type_parameters)? @context
   (struct_field_declaration)*) @item
+
+; Tuple structs
+(tuple_struct_definition
+  (attributes)? @annotation
+  (visibility)? @context
+  "struct" @context
+  (identifier) @name
+  (type_parameters)? @context) @item
 
 ; Enums
 (enum_definition

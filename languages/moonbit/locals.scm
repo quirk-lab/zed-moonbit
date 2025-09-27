@@ -3,6 +3,7 @@
 ; Functions
 
 (function_definition (function_identifier) @local.definition)
+(named_lambda_expression (lowercase_identifier) @local.definition)
 
 ; Variables
 
@@ -17,6 +18,7 @@
 ; Types
 
 (struct_definition (identifier) @local.definition)
+(tuple_struct_definition (identifier) @local.definition)
 (enum_definition (identifier) @local.definition)
 (type_definition (identifier) @local.definition)
 (type_identifier) @local.definition

@@ -206,7 +206,7 @@
 
 "async" @keyword.coroutine
 
-[ "try" "raise" "catch" ] @keyword.exception
+[ "try" "raise" "noraise" "catch" ] @keyword.exception
 
 ;; Delimiters
 
@@ -262,6 +262,7 @@
     (function_definition)
     (impl_definition)
     (struct_definition)
+    (tuple_struct_definition)
     (test_definition)
     (trait_alias_definition)
     (trait_definition)
