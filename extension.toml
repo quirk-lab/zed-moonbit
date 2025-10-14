@@ -1,7 +1,7 @@
 id = "moonbit"
 name = "MoonBit"
 description = "MoonBit support."
-version = "0.1.0"
+version = "0.1.1"
 schema_version = 1
 authors = [
     "MrHeer <hlm52pk@163.com>",
@@ -16,4 +16,4 @@ languages = ["MoonBit"]
 
 [grammars.moonbit]
 repository = "https://github.com/moonbitlang/tree-sitter-moonbit"
-commit = "290094725390a4e5f4fdb0524d1be037016890ba"
+commit = "a5a7e0b9cb2db740cfcc4232b2f16493b42a0c82"
