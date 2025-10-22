@@ -1,7 +1,7 @@
 name = "MoonBit"
 grammar = "moonbit"
 path_suffixes = ["mbt"]
-line_comments = ["// ", "/// ", "#| ", "$| "]
+line_comments = ["// ", "/// "]
 autoclose_before = ";:.,=}])>"
 brackets = [
     { start = "{", end = "}", close = true, newline = true },
