@@ -15,8 +15,6 @@
   (test_definition
     "test"
     (string_literal)? @run
-    (parameters)?
-    (block_expression)
   )
   (#set! tag "moon-test")
 )
