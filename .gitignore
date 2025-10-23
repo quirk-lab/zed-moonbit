@@ -1,4 +1,5 @@
 *.wasm
 grammars
 target
-moonbit-test
+
+test_zed_moonbit
