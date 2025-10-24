@@ -6,7 +6,7 @@ struct MoonBitExtension {
     did_find_server: bool,
 }
 
-const SERVER_PATH: &str = "node_modules/@moonbit/moonbit-lsp/lsp-server.js";
+const SERVER_PATH: &str = "node_modules/@moonbit/moonbit-lsp/moonbit-lsp";
 const PACKAGE_NAME: &str = "@moonbit/moonbit-lsp";
 
 impl MoonBitExtension {
