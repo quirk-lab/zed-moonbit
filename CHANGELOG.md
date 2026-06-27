@@ -1,14 +1,22 @@
 # Changelog
 
-## 0.1.1 (2025-10-23)
+All notable changes to this project will be documented in this file.
 
-- Updates the grammar to the latest version and updates the queries to work with the new version.([@Kalle Fagerberg](https://github.com/applejag))
-- Removed the `<` & `>` brackets from `config.toml` as MoonBit only uses those as operators, and was annoying to type `x < 5` as Zed would autocomplete it to `x <> 5`.([@Kalle Fagerberg](https://github.com/applejag))
-- Fix comment highlighting so it's actually comment-colored.([@Kalle Fagerberg](https://github.com/applejag))
-- Added visibility (`pub`/`priv`) to outline.([@Kalle Fagerberg](https://github.com/applejag))
-- Added back external language injection in code.([@Kalle Fagerberg](https://github.com/applejag))
-- Bump extension API, remove windows path workaround.([@Jakub Konka](https://github.com/kubkon))
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 0.1.0 (2025-04-08)
+## [0.1.6] - 2026-06-14
+### Changed
+- Updated the Tree-sitter grammar pin for MoonBit 0.10 syntax.
+- Added highlighting for trait and impl method names and the `<+` and `<?` operators.
 
-- Initial release of MoonBit support.
+### Added
+- Added a MoonBit 0.10 syntax fixture and fixture parsing command.
+
+## [0.1.0] - 2024-XX-XX
+### Added
+- Added base project structure.
+- Initial LSP integration with `moonbit-lsp`.
+- Language configuration for MoonBit files (`.mbt`).
+- Initial Tree-sitter queries (highlights, brackets, indents, outline).
+- Initial documentation for open-source standards.

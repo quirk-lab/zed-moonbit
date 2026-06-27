@@ -1,18 +1,5 @@
-[
-  (block_expression)
-  (loop_expression)
-  (match_expression)
-  (struct_expression)
-] @indent.begin
-
-[
- ")"
- "}"
- "]"
-] @indent.end
-
-[
- ")"
- "}"
- "]"
-] @indent.branch
+(block_expression "}" @end) @indent
+(array_expression "]" @end) @indent
+(tuple_expression ")" @end) @indent
+(struct_expression "}" @end) @indent
+(match_expression "}" @end) @indent
