@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq git
+          npm install -g tree-sitter-cli
+
+      - name: Setup grammar
+        run: |
+          make grammar-setup
+
+      - name: Validate Tree-sitter queries
+        run: |
+          make validate-queries
+
+      - name: Validate MoonBit syntax fixtures
+        run: |
+          make test-syntax
+
+      - name: Rust check
+        run: |
+          cargo check

@@ -1,5 +1,17 @@
-*.wasm
-grammars
-target
+# Rust build directory
+/target/
 
-test_zed_moonbit
+# Lockfile
+Cargo.lock
+
+# Editor / OS files
+.DS_Store
+.idea/
+.vscode/
+
+# Zed build artifacts
+/*.wasm
+/grammars/*.wasm
+
+# Local Tree-sitter grammar checkout
+/tree-sitter-moonbit/grammars/
