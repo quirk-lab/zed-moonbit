@@ -1,36 +1,100 @@
-use zed_extension_api::{self as zed, Result};
+use std::{env, fs};
+use zed::settings::LspSettings;
+use zed_extension_api::{self as zed, serde_json, Result};
 
-struct MoonBitExtension;
+struct MoonBitExtension {
+    did_find_server: bool,
+}
+
+const SERVER_PATH: &str = "node_modules/@moonbit/moonbit-lsp/moonbit-lsp";
+const PACKAGE_NAME: &str = "@moonbit/moonbit-lsp";
+
+impl MoonBitExtension {
+    fn server_exists(&self) -> bool {
+        fs::metadata(SERVER_PATH).is_ok_and(|stat| stat.is_file())
+    }
+
+    fn server_script_path(&mut self, id: &zed::LanguageServerId) -> Result<String> {
+        let server_exists = self.server_exists();
+        if self.did_find_server && server_exists {
+            return Ok(SERVER_PATH.to_string());
+        }
+
+        zed::set_language_server_installation_status(
+            id,
+            &zed::LanguageServerInstallationStatus::CheckingForUpdate,
+        );
+        let version = zed::npm_package_latest_version(PACKAGE_NAME)?;
+
+        if !server_exists
+            || zed::npm_package_installed_version(PACKAGE_NAME)?.as_ref() != Some(&version)
+        {
+            zed::set_language_server_installation_status(
+                id,
+                &zed::LanguageServerInstallationStatus::Downloading,
+            );
+            let result = zed::npm_install_package(PACKAGE_NAME, &version);
+            match result {
+                Ok(()) => {
+                    if !self.server_exists() {
+                        Err(format!(
+                            "installed package '{PACKAGE_NAME}' did not contain expected path '{SERVER_PATH}'",
+                        ))?;
+                    }
+                }
+                Err(error) => {
+                    if !self.server_exists() {
+                        Err(error)?;
+                    }
+                }
+            }
+        }
+
+        self.did_find_server = true;
+        Ok(SERVER_PATH.to_string())
+    }
+}
 
 impl zed::Extension for MoonBitExtension {
     fn new() -> Self {
-        Self
+        Self {
+            did_find_server: false,
+        }
     }
 
     fn language_server_command(
         &mut self,
-        language_server_id: &zed::LanguageServerId,
-        worktree: &zed::Worktree,
+        id: &zed::LanguageServerId,
+        _: &zed::Worktree,
     ) -> Result<zed::Command> {
-        if language_server_id.as_ref() == "moonbit-lsp" {
-            let path = worktree.which("moonbit-lsp");
+        let server_path = self.server_script_path(id)?;
+        Ok(zed::Command {
+            command: zed::node_binary_path()?,
+            args: vec![
+                env::current_dir()
+                    .unwrap()
+                    .join(&server_path)
+                    .to_string_lossy()
+                    .to_string(),
+                "--stdio".to_string(),
+            ],
+            env: Default::default(),
+        })
+    }
 
-            if let Some(path) = path {
-                return Ok(zed::Command {
-                    command: path,
-                    args: vec![],
-                    env: Default::default(),
-                });
-            } else {
-                return Err(
-                    "The binary 'moonbit-lsp' was not found in your PATH.\n\
-                     Make sure you have installed it (e.g., via 'npm install -g @moonbit/moonbit-lsp') \n\
-                     and verify that the installation PATH is correctly exposed to Zed's startup environment.".to_string()
-                );
-            }
-        }
+    fn language_server_workspace_configuration(
+        &mut self,
+        _language_server_id: &zed::LanguageServerId,
+        worktree: &zed::Worktree,
+    ) -> Result<Option<serde_json::Value>> {
+        let settings = LspSettings::for_worktree("moonbit", worktree)
+            .ok()
+            .and_then(|lsp_settings| lsp_settings.settings.clone())
+            .unwrap_or_default();
 
-        Err(format!("Unknown language server: {}", language_server_id.as_ref()))
+        Ok(Some(serde_json::json!({
+            "moonbit": settings
+        })))
     }
 }
 

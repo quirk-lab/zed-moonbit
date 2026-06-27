@@ -1,6 +1,6 @@
 id = "moonbit"
 name = "MoonBit"
-version = "0.1.6"
+version = "0.1.7"
 schema_version = 1
 authors = ["Lorenzo Pirro <lorenzopirro1@gmail.com>"]
 description = "MoonBit language support for Zed Editor. High-contrast premium aesthetics and LSP."
@@ -11,6 +11,6 @@ license = "MIT"
 repository = "https://github.com/moonbitlang/tree-sitter-moonbit"
 rev = "c76eb43a7ea35de24eec13dee1fe22fadb2533d7"
 
-[language_servers.moonbit-lsp]
-name = "MoonBit Language Server"
+[language_servers.moonbit]
+name = "MoonBit LSP"
 languages = ["MoonBit"]

@@ -1,6 +1,6 @@
 [package]
 name = "zed-moonbit"
-version = "0.1.0"
+version = "0.1.7"
 edition = "2021"
 authors = ["Placeholder Author <placeholder@example.com>"]
 description = "MoonBit language support for Zed"
