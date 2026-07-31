@@ -9,7 +9,7 @@ license = "MIT"
 
 [grammars.moonbit]
 repository = "https://github.com/moonbitlang/tree-sitter-moonbit"
-rev = "c76eb43a7ea35de24eec13dee1fe22fadb2533d7"
+rev = "5435c307c6cf2ef0d508a99047b06f35a4308444"
 
 [language_servers.moonbit]
 name = "MoonBit LSP"
