@@ -1,7 +1,7 @@
 SHELL := /bin/bash
 
 TREE_SITTER_DIR ?= ../tree-sitter-moonbit
-GRAMMAR_COMMIT ?= c76eb43a7ea35de24eec13dee1fe22fadb2533d7
+GRAMMAR_COMMIT ?= 5435c307c6cf2ef0d508a99047b06f35a4308444
 NODE_TYPES := $(TREE_SITTER_DIR)/src/node-types.json
 
 ifeq ($(OS),Windows_NT)
