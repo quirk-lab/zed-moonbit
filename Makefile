@@ -1,7 +1,10 @@
 SHELL := /bin/bash
-
 TREE_SITTER_DIR ?= ../tree-sitter-moonbit
-GRAMMAR_COMMIT ?= 5435c307c6cf2ef0d508a99047b06f35a4308444
+
+GRAMMAR_COMMIT ?= $(shell \
+	python3 -c 'import tomllib; print(tomllib.load(open("extension.toml", "rb"))["grammars"]["moonbit"]["rev"])' \
+)
+
 NODE_TYPES := $(TREE_SITTER_DIR)/src/node-types.json
 
 ifeq ($(OS),Windows_NT)
