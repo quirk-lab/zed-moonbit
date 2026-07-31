@@ -1,70 +1,84 @@
-[![CI](https://github.com/Metalymph/zed-moonbit/actions/workflows/ci.yml/badge.svg)](https://github.com/Metalymph/zed-moonbit/actions/workflows/ci.yml)
+[![CI](https://github.com/quirk-lab/zed-moonbit/actions/workflows/ci.yml/badge.svg)](https://github.com/quirk-lab/zed-moonbit/actions/workflows/ci.yml)
 
-# MoonBit Community
+# MoonBit for Zed
 
-MoonBit language support for the Zed editor.
+Official MoonBit language support for the Zed editor.
 
-This extension provides Tree-sitter-based syntax highlighting and integrates the MoonBit Language Server (`moonbit-lsp`).
+This extension provides Tree-sitter-based syntax highlighting together with the native MoonBit Language Server (`moon lsp`).
 
 ---
 
 ## Features
 
-- Syntax highlighting (Tree-sitter)
-- MoonBit 0.10 grammar and syntax coverage
-- LSP integration (`moonbit-lsp`)
-- Outline support (basic)
-- Brackets + indentation
+- Tree-sitter syntax highlighting
+- Partial MoonBit 0.10.4 syntax support (literal Iterators and Bytes interpolation are locked by `tree-sitter-moonbit` current support)
+- Native MoonBit LSP integration (`moon lsp`)
+- Outline support
+- Bracket matching
+- Indentation support
 
 ---
 
 ## Status
 
-Early-stage but functional.
+Functional and actively maintained.
 
-The main focus is correctness of Tree-sitter queries. Coverage is intentionally minimal and will evolve with the upstream MoonBit grammar.
+The extension intentionally keeps its Rust implementation minimal and delegates language intelligence to the official MoonBit Language Server while following the upstream Tree-sitter grammar.
+
+The extension tracks the upstream MoonBit Tree-sitter grammar and native MoonBit language server.
+
+Syntax support is limited by the currently pinned upstream grammar revision and may not yet cover every feature introduced in the latest MoonBit release.
 
 ---
 
 ## Requirements
 
 - Zed Editor
-- `moonbit-lsp` in PATH
-- Rust toolchain (for dev only)
+- MoonBit 0.10.4 or newer
 
-Install LSP:
+Verify your installation:
 
-```
-npm install -g @moonbit/moonbit-lsp
+```sh
+moon version
 ```
 
-Verify:
+The language server is included with the MoonBit toolchain:
 
+```sh
+moon lsp
 ```
-which moonbit-lsp
-```
+
+No separate npm package is required.
 
 ---
 
-## Installation (Dev)
+## Installation (Development)
 
-Clone:
+Clone the repository:
 
-```
-git clone https://github.com/Metalymph/zed-moonbit
+```sh
+git clone https://github.com/quirk-lab/zed-moonbit
 cd zed-moonbit
 ```
 
-In Zed:
+Then in Zed:
 
-- open command palette
-- run: `zed: install dev extension`
+- Open the Command Palette
+- Run:
 
-### Note: For the official releases look at [Releases](https://github.com/Metalymph/zed-moonbit/releases).
+```
+zed: install dev extension
+```
+
+Official releases are available from:
+
+https://github.com/quirk-lab/zed-moonbit/releases
+
+---
 
 ## Optional: associate `moon.pkg` with MoonBit
 
-Since `moon.pkg` is a MoonBit package manifest rather than a `.mbt` source file, you may want to associate it manually in Zed settings:
+Since `moon.pkg` is a MoonBit package manifest rather than a source file, you may want to associate it manually:
 
 ```json
 {
@@ -74,18 +88,15 @@ Since `moon.pkg` is a MoonBit package manifest rather than a `.mbt` source file,
 }
 ```
 
-Zed currently does not support matching exact filenames in language extensions,
-so this must be configured manually.
+Zed currently cannot associate languages with exact filenames automatically.
 
 ---
 
-## Development Workflow
-
-### Core commands
+## Development
 
 Using Just:
 
-```
+```sh
 just dev
 just validate-queries
 just test-syntax
@@ -94,84 +105,74 @@ just zed-log
 
 Using Make:
 
-```
+```sh
 make dev
 make validate-queries
 make test-syntax
 make zed-log
 ```
 
-Windows (PowerShell):
+Windows:
 
-```
+```powershell
 pwsh -File scripts/dev.ps1
 ```
 
 ---
 
-### What `dev` does
-
-- validates Tree-sitter queries
-- prints Zed log path
-- opens project in Zed
-
----
-
 ## Tree-sitter Development
 
-All syntax behavior is driven by:
+Tree-sitter queries live in:
 
-```
-languages/moonbit/*.scm
-```
-
-You **must not guess node names**.
-
-Use:
-
-```
-make validate-queries
+```text
+languages/moonbit/
 ```
 
-or:
+Always validate queries after making changes:
 
-```
+```sh
 just validate-queries
 ```
 
-If queries are invalid, Zed will fail to load the language.
+or
+
+```sh
+make validate-queries
+```
+
+Never guess node names.
 
 ---
 
 ## Debugging
 
-Show log path:
+Print the Zed log path:
 
-```
+```sh
 just zed-log-path
 ```
 
 Tail logs:
 
-```
+```sh
 just zed-log
 ```
 
-Common error:
+If you encounter errors such as:
 
-```
+```text
 Invalid node type "..."
 ```
 
-Fix by checking:
+verify the syntax tree using:
 
-```
-tree-sitter parse file.mbt
+```sh
+tree-sitter parse example.mbt
 ```
 
-and:
+and compare it with:
 
-```
+```text
 src/node-types.json
 ```
 
@@ -179,63 +180,60 @@ src/node-types.json
 
 ## Project Structure
 
-```
-src/lib.rs                -> Rust extension entry point
-extension.toml           -> extension manifest
-languages/moonbit/       -> Tree-sitter config + queries
-scripts/                 -> validation + dev tools
+```text
+src/lib.rs              Rust extension entry point
+extension.toml          Extension manifest
+languages/moonbit/      Tree-sitter configuration and queries
+scripts/                Development utilities
 ```
 
 ---
 
 ## Design Principles
 
-- minimal queries > complex broken queries
-- no guessed AST nodes
-- validate before testing
-- keep extension logic thin (LSP does the heavy work)
+- Thin extension
+- Native MoonBit tooling
+- Upstream-first grammar
+- Minimal, maintainable queries
+- Validate before testing
 
 ---
 
 ## Roadmap
 
-- improve query coverage
-- refine outline support
-- stabilize indentation rules
-- prepare for extension registry release
+- Improve query coverage
+- Refine outline support
+- Improve indentation rules
+- Track new MoonBit language releases
 
 ---
 
 ## Contributing
 
-Small, focused changes only.
+Small, focused pull requests are preferred.
 
-Before opening a PR:
+Before opening a PR, always run:
 
-```
-make validate-queries
+```sh
+just validate-queries
 ```
 
 ---
 
 ## Troubleshooting
 
-Generally speaking, if you meet any problem, open an issue on GitHub.
-
 ### Error: `failed to compile grammar 'moonbit'`
 
-If you see this error while installing the extension, it may be caused by a corrupted or conflicting local grammar cache in Zed.
+This is usually caused by a corrupted local Tree-sitter grammar cache.
 
-Zed clones the Tree-sitter grammar into a local `grammars/moonbit` directory. If that folder already exists but is not a valid Git repository (or does not match the expected remote), installation can fail.
+To fix:
 
-**Fix:**
-
-1. Locate Zed’s extensions/grammars directory (depends on your OS).
-2. Delete the `grammars` folder (or at least `grammars/moonbit`).
+1. Close Zed.
+2. Delete the local `grammars/moonbit` directory (or the entire `grammars` directory).
 3. Restart Zed.
 4. Reinstall the extension.
 
-This is a local state issue and not a problem with the extension itself.
+This is a local cache issue rather than an extension bug.
 
 ---
 

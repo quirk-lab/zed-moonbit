@@ -1,10 +1,17 @@
 [package]
 name = "zed-moonbit"
-version = "0.1.7"
+version = "0.2.0"
 edition = "2021"
-authors = ["Placeholder Author <placeholder@example.com>"]
-description = "MoonBit language support for Zed"
+authors = [
+  "Lorenzo Pirro <lorenzopirro1@gmail.com>",
+  "He Linming <hlm52pk@163.com>",
+]
+description = "MoonBit language support for the Zed editor"
+repository = "https://github.com/quirk-lab/zed-moonbit"
+readme = "README.md"
 license = "MIT"
+keywords = ["zed", "moonbit", "language-server", "tree-sitter"]
+categories = ["development-tools"]
 
 [dependencies]
 zed_extension_api = "0.1.0"
